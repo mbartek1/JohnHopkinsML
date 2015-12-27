@@ -1,0 +1,74 @@
+library(ggplot2);library(caret)
+
+#C:\tools\RStudio\resources\pml-training.csv
+#C:\tools\RStudio\resources\pml-testing.csv
+
+setwd("C:/tools/RStudio/resources/")
+training<-read.csv("pml-training.csv")
+testing<-read.csv("pml-testing.csv")
+
+# Remove first few columns that can't help with prediction
+training[1:6] <- list(NULL) 
+
+##################
+
+
+#replace na with mean
+data<-read.csv("pml-training.csv")
+for(i in 1:ncol(data)){
+  data[is.na(data[,i]), i] <- mean(data[,i], na.rm = TRUE)
+}
+
+training <- data
+training[1:6] <- list(NULL) 
+
+data2<-read.csv("pml-testing.csv")
+for(i in 1:ncol(data2)){
+  data2[is.na(data2[,i]), i] <- mean(data2[,i], na.rm = TRUE)
+}
+
+testing <- data
+
+
+testing[1:6] <- list(NULL) 
+#######################
+
+
+#Check for near zero values
+nzv <- nearZeroVar(training, saveMetrics= TRUE)
+nzv[nzv$nzv,][1:99,]
+#eliminate the near zero values 
+
+nzv <- nearZeroVar(training)
+filteredTraining <- training[,-nzv]
+filteredTesting <- testing[,-nzv]
+dim(training)
+dim(filteredTraining)
+
+#train the model
+inTrain <- createDataPartition(y=filteredTraining$classe,p=0.95, list=FALSE)
+intraining <- filteredTraining[inTrain,]
+intesting <- filteredTraining[-inTrain,]
+set.seed(32323)
+folds <- createFolds(y=filteredTraining$classe,k=20,
+                             list=TRUE,returnTrain=TRUE)
+sapply(folds,length)
+
+
+#modFit <- train(classe~ .,data=filteredTraining,method="rf",prox=TRUE)
+#modFit <- train(classe~ .,data=intesting,method="rf",prox=TRUE)
+modFit <- train(classe~ .,data=folds[2],method="rf",prox=TRUE)
+
+#predit
+
+
+pred <- predict(modFit,intesting ); 
+
+#get confusion matrix
+cm <- confusionMatrix (pred, intesting$classe)
+
+cm <- confusionMatrix (pred, intraining$classe)
+
+
+predict(modFit, filteredTesting, type="raw")
+myprediction <- predict(modFit, filteredTesting, type="raw")
