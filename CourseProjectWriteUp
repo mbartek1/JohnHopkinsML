@@ -1,6 +1,10 @@
 
 
+**********************************************************************
+*  Let's load the needed libraries
+**********************************************************************
 
+    
 library(ggplot2);library(caret)
 
 #C:\tools\RStudio\resources\pml-training.csv
