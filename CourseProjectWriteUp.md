@@ -49,9 +49,9 @@ dim(filteredTraining)
 inTrain <- createDataPartition(y=filteredTraining$classe,p=0.95, list=FALSE)
 intraining <- filteredTraining[inTrain,]
 intesting <- filteredTraining[-inTrain,]
+
 set.seed(32323)
-folds <- createFolds(y=filteredTraining$classe,k=20,
-                             list=TRUE,returnTrain=TRUE)
+folds <- createFolds(y=filteredTraining$classe,k=20,list=TRUE,returnTrain=TRUE)
 sapply(folds,length)
 
 
