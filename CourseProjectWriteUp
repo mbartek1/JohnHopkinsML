@@ -1,3 +1,6 @@
+
+
+
 library(ggplot2);library(caret)
 
 #C:\tools\RStudio\resources\pml-training.csv
@@ -9,8 +12,6 @@ testing<-read.csv("pml-testing.csv")
 
 # Remove first few columns that can't help with prediction
 training[1:6] <- list(NULL) 
-
-##################
 
 
 #replace na with mean
@@ -31,7 +32,7 @@ testing <- data
 
 
 testing[1:6] <- list(NULL) 
-#######################
+
 
 
 #Check for near zero values
@@ -72,3 +73,4 @@ cm <- confusionMatrix (pred, intraining$classe)
 
 predict(modFit, filteredTesting, type="raw")
 myprediction <- predict(modFit, filteredTesting, type="raw")
+
