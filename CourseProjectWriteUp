@@ -1,8 +1,8 @@
 
 
-**********************************************************************
-*  First we need to load the needed libraries
-**********************************************************************
+######################################################################
+#  First we need to load the needed libraries
+######################################################################
 
     
 library(ggplot2);library(caret)
@@ -10,9 +10,9 @@ library(ggplot2);library(caret)
 #C:\tools\RStudio\resources\pml-training.csv
 #C:\tools\RStudio\resources\pml-testing.csv
 
-**********************************************************************
-* Set the working directory and pull out the csv files into memory in R
-**********************************************************************
+######################################################################
+# Set the working directory and pull out the csv files into memory in R
+######################################################################
 
 
 setwd("C:/tools/RStudio/resources/")
@@ -25,13 +25,13 @@ testing<-read.csv("pml-testing.csv")
 
 
 
-**********************************************************************
-*
-*  First pass through I left the NA values but got an error when trying to create a predict model and 
-* it errored due to the NA values.  Thus I had to go back and eliminate them.  I replaced the NA with 
-* a a mean (average) value for that column
-*  
-**********************************************************************
+######################################################################
+#
+#  First pass through I left the NA values but got an error when trying to create a predict model and 
+# it errored due to the NA values.  Thus I had to go back and eliminate them.  I replaced the NA with 
+# a a mean (average) value for that column
+#  
+######################################################################
 
 #replace na with mean
 data<-read.csv("pml-training.csv")
@@ -40,12 +40,12 @@ for(i in 1:ncol(data)){
 }
 
 training <- data
-**********************************************************************
-*  
-* In looking at the first few files in the dataset I found they would not really be useful 
-* for helping to predict which class (A, B, C, etc.) of movement it was in so I eliminated them by nulling them.
-*
-**********************************************************************
+######################################################################
+#  
+# In looking at the first few files in the dataset I found they would not really be useful 
+# for helping to predict which class (A, B, C, etc.) of movement it was in so I eliminated them by nulling them.
+#
+######################################################################
 # Remove first few columns that can't help with prediction
 training[1:6] <- list(NULL) 
 
@@ -61,21 +61,21 @@ testing <- data
 testing[1:6] <- list(NULL) 
 
 
-**********************************************************************
-* There seemed to be way too many fields in the data so I thought of reducing them somehow.
-* In the Caret package's pre-processing help section (http://topepo.github.io/caret/preprocess.html)
-* they refer to near Zero Variance predictors that helps identify predictors that are not useful or 
-* can mess up the model.   This function gives the Frequency Ratio and Percent of Unique Values
-**********************************************************************
+######################################################################
+# There seemed to be way too many fields in the data so I thought of reducing them somehow.
+# In the Caret package's pre-processing help section (http://topepo.github.io/caret/preprocess.html)
+# they refer to near Zero Variance predictors that helps identify predictors that are not useful or 
+# can mess up the model.   This function gives the Frequency Ratio and Percent of Unique Values
+######################################################################
 
 #Check for near zero values
 nzv <- nearZeroVar(training, saveMetrics= TRUE)
 nzv[nzv$nzv,][1:99,]
 #eliminate the near zero values 
 
-**********************************************************************
-*  Identify the near zero values and eliminate those fields from the datasets
-**********************************************************************
+######################################################################
+#  Identify the near zero values and eliminate those fields from the datasets
+######################################################################
 
 nzv <- nearZeroVar(training)
 filteredTraining <- training[,-nzv]
@@ -84,19 +84,19 @@ dim(training)
 dim(filteredTraining)
 
 
-**********************************************************************
-*  I had a ton of performance problems with the datasets so I had to reduce it down
-* to a very small sub-sample in order for it to work in a reasonable amount of time
-**********************************************************************
+######################################################################
+#  I had a ton of performance problems with the datasets so I had to reduce it down
+# to a very small sub-sample in order for it to work in a reasonable amount of time
+######################################################################
 #train the model
 inTrain <- createDataPartition(y=filteredTraining$classe,p=0.95, list=FALSE)
 intraining <- filteredTraining[inTrain,]
 intesting <- filteredTraining[-inTrain,]
 
-**********************************************************************
-*  I created these folds as an attempt to get smaller slices but ended up not
-* using them.
-**********************************************************************
+######################################################################
+#  I created these folds as an attempt to get smaller slices but ended up not
+# using them.
+######################################################################
 set.seed(32323)
 folds <- createFolds(y=filteredTraining$classe,k=20,list=TRUE,returnTrain=TRUE)
 sapply(folds,length)
@@ -104,9 +104,9 @@ sapply(folds,length)
 
 #modFit <- train(classe~ .,data=filteredTraining,method="rf",prox=TRUE)
 #modFit <- train(classe~ .,data=intesting,method="rf",prox=TRUE)
-**********************************************************************
-*  I used the Random Forests method
-**********************************************************************
+######################################################################
+#  I used the Random Forests method
+######################################################################
 modFit <- train(classe~ .,data=folds[2],method="rf",prox=TRUE)
 
 #predit
@@ -119,10 +119,10 @@ cm <- confusionMatrix (pred, intesting$classe)
 
 cm <- confusionMatrix (pred, intraining$classe)
 
-**********************************************************************
-*  I used the model against the test set and got a very high mark in the 
-* system so I'm happy :-)
-**********************************************************************
+######################################################################
+#  I used the model against the test set and got a very high mark in the 
+# system so I'm happy :-)
+######################################################################
 
 predict(modFit, filteredTesting, type="raw")
 myprediction <- predict(modFit, filteredTesting, type="raw")
@@ -130,10 +130,10 @@ myprediction <- predict(modFit, filteredTesting, type="raw")
 
 
 
-**********************************************************************
-*  Out of sample error to be and estimate the error appropriately with cross-validation I 
-* will show below ...
-**********************************************************************
+######################################################################
+#  Out of sample error to be and estimate the error appropriately with cross-validation I 
+# will show below ...
+######################################################################
 > modFit
 Random Forest 
 
@@ -155,7 +155,7 @@ Accuracy was used to select the optimal model using  the largest value.
 The final value used for the model was mtry = 27. 
 
 
-**********************************************************************
-*  Based on the model training information above I believe the
-* sample error rate to be 88% 
-**********************************************************************
+######################################################################
+#  Based on the model training information above I believe the
+# sample error rate to be 88% 
+######################################################################
