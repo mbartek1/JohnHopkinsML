@@ -1,5 +1,3 @@
-
-
 ######################################################################
 #  First we need to load the needed libraries
 ######################################################################
@@ -29,7 +27,7 @@ testing<-read.csv("pml-testing.csv")
 #
 #  First pass through I left the NA values but got an error when trying to create a predict model and 
 # it errored due to the NA values.  Thus I had to go back and eliminate them.  I replaced the NA with 
-# a a mean (average) value for that column
+# a mean (average) value for that column
 #  
 ######################################################################
 
@@ -42,14 +40,15 @@ for(i in 1:ncol(data)){
 training <- data
 ######################################################################
 #  
-# In looking at the first few files in the dataset I found they would not really be useful 
+# In looking at the first few fields in the dataset I found they would not really be useful 
 # for helping to predict which class (A, B, C, etc.) of movement it was in so I eliminated them by nulling them.
 #
 ######################################################################
 # Remove first few columns that can't help with prediction
 training[1:6] <- list(NULL) 
 
-# do same for testing values
+
+# do same (revert NA to mean and remove first few columns) for testing values
 data2<-read.csv("pml-testing.csv")
 for(i in 1:ncol(data2)){
   data2[is.na(data2[,i]), i] <- mean(data2[,i], na.rm = TRUE)
@@ -66,6 +65,7 @@ testing[1:6] <- list(NULL)
 # In the Caret package's pre-processing help section (http://topepo.github.io/caret/preprocess.html)
 # they refer to near Zero Variance predictors that helps identify predictors that are not useful or 
 # can mess up the model.   This function gives the Frequency Ratio and Percent of Unique Values
+# to help identify undesirable fields and so I eliminated them.
 ######################################################################
 
 #Check for near zero values
@@ -131,8 +131,8 @@ myprediction <- predict(modFit, filteredTesting, type="raw")
 
 
 ######################################################################
-#  Out of sample error to be and estimate the error appropriately with cross-validation I 
-# will show below ...
+#  I will show out of sample error and estimate the error appropriately 
+# with cross-validation below ...
 ######################################################################
 > modFit
 Random Forest 
